@@ -223,8 +223,5 @@ while running:
     # Update display
     pygame.display.flip()
 
-    # Frame rate
     clock.tick(60)
-
-# Quit pygame
 pygame.quit()
