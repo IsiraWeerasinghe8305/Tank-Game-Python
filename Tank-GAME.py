@@ -214,13 +214,9 @@ while running:
     for wall in walls:
         pygame.draw.rect(screen, GRAY, wall)
 
-    
-    pygame.draw.rect(screen, BLUE, (player_xf, player_yf, Flag_SIZE, Flag_SIZE))
-    pygame.draw.rect(screen, RED, (player2_xf, player2_yf, Flag_SIZE, Flag_SIZE))
-    
-    
-    
-    # Update display
+    pygame.draw.rect(screen, BLUE, (player_xf, player_yf, FLAG_SIZE, FLAG_SIZE))
+    pygame.draw.rect(screen, RED, (player2_xf, player2_yf, FLAG_SIZE, FLAG_SIZE))
+
     pygame.display.flip()
 
     clock.tick(60)
