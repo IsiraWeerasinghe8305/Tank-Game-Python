@@ -1,24 +1,25 @@
 import pygame
 
-# Initialize Pygame
 pygame.init()
 
-# Constants
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
-PLAYER_SIZE = 20
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Tank Battle")
+
+
+
+PLAYER_SIZE = 30
 BULLET_SIZE = 10
 PLAYER_SPEED = 5
 BULLET_SPEED = 7
-
 Flag_SIZE=50
-player_xf = 50
-player_yf = SCREEN_HEIGHT // 2
 
-player2_xf = SCREEN_WIDTH - 50
-player2_yf = SCREEN_HEIGHT // 2
+player_xf = 150
+player_yf = SCREEN_HEIGHT // 2 + 50
+player2_xf = SCREEN_WIDTH - 180
+player2_yf = SCREEN_HEIGHT // 2 + 50
 
-# Colors
 GREEN = (100, 255, 100)
 BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
@@ -26,24 +27,17 @@ GRAY = (169, 169, 169)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 
-# Set up the display
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Tank Battle")
 
-# Fonts
-font = pygame.font.Font(None, 74)
-small_font = pygame.font.Font(None, 36)
+
+
 
 # Define the player starting position
-player_x = 50
+player_x = 50 
 player_y = SCREEN_HEIGHT // 2
-
 player2_x = SCREEN_WIDTH - 50
 player2_y = SCREEN_HEIGHT // 2
 
-# Lists to hold bullets and enemies
 bullets = []
-
 walls = [
     pygame.Rect(200, 200, 20, 200),
     pygame.Rect(400, 100, 20, 200),
@@ -52,8 +46,13 @@ walls = [
     pygame.Rect(500, 400, 200, 20),
     pygame.Rect(100, 00, 20,100 ),
     pygame.Rect(600, 00, 20,100 ),
+    pygame.Rect(350, 500, 20,100 ),
 ]
 
+
+# text in end of the game
+font = pygame.font.Font(None, 74)
+small_font = pygame.font.Font(None, 36)
 def game_over_screen(winner):
     screen.fill(WHITE)
     game_over_text = font.render("Game Over", True, RED)
@@ -75,11 +74,11 @@ def game_over_screen(winner):
                 return True
     return False
 
-# Main game loop
+
 running = True
 clock = pygame.time.Clock()
-last_direction = 'd'  # Initial direction for player 1 is right
-last2_direction = '4'  # Initial direction for player 2 is right
+last_direction = 'd' 
+last2_direction = '4'  
 
 def check_bullet_collision(player_rect, bullets):
     for bullet in bullets:
@@ -88,13 +87,11 @@ def check_bullet_collision(player_rect, bullets):
     return False
 
 while running:
-    # Event handling
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                # Shoot a bullet from player 1
                 if last_direction == 'a':
                     bullet = pygame.Rect(player_x, player_y + PLAYER_SIZE // 2 - BULLET_SIZE // 2, BULLET_SIZE, BULLET_SIZE)
                     bullets.append((bullet, 'a', 'player1'))
@@ -109,7 +106,6 @@ while running:
                     bullets.append((bullet, 's', 'player1'))
                     
             if event.key == pygame.K_KP_0:
-                # Shoot a bullet from player 2
                 if last2_direction == '4':
                     bullet2 = pygame.Rect(player2_x, player2_y + PLAYER_SIZE // 2 - BULLET_SIZE // 2, BULLET_SIZE, BULLET_SIZE)
                     bullets.append((bullet2, '4', 'player2'))
@@ -123,7 +119,7 @@ while running:
                     bullet2 = pygame.Rect(player2_x + PLAYER_SIZE // 2 - BULLET_SIZE // 2, player2_y + PLAYER_SIZE, BULLET_SIZE, BULLET_SIZE)
                     bullets.append((bullet2, '5', 'player2'))
 
-    # Player movement
+    # Player_movement
     keys = pygame.key.get_pressed()
     if keys[pygame.K_a] and player_x > 0:
         if not any(wall.collidepoint(player_x - PLAYER_SPEED, player_y + PLAYER_SIZE // 2) for wall in walls):
@@ -144,6 +140,7 @@ while running:
 
     if keys[pygame.K_LEFT] and player2_x > 0:
         if not any(wall.collidepoint(player2_x - PLAYER_SPEED, player2_y + PLAYER_SIZE // 2) for wall in walls):
+            
             player2_x -= PLAYER_SPEED
         last2_direction = '4'
     elif keys[pygame.K_RIGHT] and player2_x < SCREEN_WIDTH - PLAYER_SIZE:
@@ -182,23 +179,34 @@ while running:
         if bullet.x < 0 or bullet.x > SCREEN_WIDTH or bullet.y < 0 or bullet.y > SCREEN_HEIGHT:
             bullets.remove((bullet, direction, owner))
 
-        # Collision detection with players
         player_rect = pygame.Rect(player_x, player_y, PLAYER_SIZE, PLAYER_SIZE)
         player2_rect = pygame.Rect(player2_x, player2_y, PLAYER_SIZE, PLAYER_SIZE)
+        
+        player_rectf = pygame.Rect(player_xf, player_yf, Flag_SIZE, Flag_SIZE)
+        player2_rectf = pygame.Rect(player2_xf, player2_yf, Flag_SIZE, Flag_SIZE)
 
         if owner == 'player1' and bullet.colliderect(player2_rect):
             if game_over_screen("Player 1"):
-                # Reset game state
                 player_x, player_y = 50, SCREEN_HEIGHT // 2
                 player2_x, player2_y = SCREEN_WIDTH - 50, SCREEN_HEIGHT // 2
                 bullets.clear()
+        elif owner == 'player1' and bullet.colliderect(player2_rectf):
+            if game_over_screen("Player 1"):
+                player_x, player_y = 50, SCREEN_HEIGHT // 2
+                player2_x, player2_y = SCREEN_WIDTH - 50, SCREEN_HEIGHT // 2
+                bullets.clear()
+                    
         elif owner == 'player2' and bullet.colliderect(player_rect):
             if game_over_screen("Player 2"):
-                # Reset game state
                 player_x, player_y = 50, SCREEN_HEIGHT // 2
                 player2_x, player2_y = SCREEN_WIDTH - 50, SCREEN_HEIGHT // 2
                 bullets.clear()
-
+        elif owner == 'player2' and bullet.colliderect(player_rectf):
+            if game_over_screen("Player 2"):
+                player_x, player_y = 50, SCREEN_HEIGHT // 2
+                player2_x, player2_y = SCREEN_WIDTH - 50, SCREEN_HEIGHT // 2
+                bullets.clear()
+                
     # Collision detection with walls
     for wall in walls:
         for bullet, direction, owner in bullets[:]:
@@ -209,12 +217,13 @@ while running:
     screen.fill(GREEN)
     pygame.draw.rect(screen, BLUE, (player_x, player_y, PLAYER_SIZE, PLAYER_SIZE))
     pygame.draw.rect(screen, RED, (player2_x, player2_y, PLAYER_SIZE, PLAYER_SIZE))
+    
+ 
     for bullet, _, _ in bullets:
         pygame.draw.rect(screen, BLACK, bullet)
     for wall in walls:
         pygame.draw.rect(screen, GRAY, wall)
 
-    
     pygame.draw.rect(screen, BLUE, (player_xf, player_yf, Flag_SIZE, Flag_SIZE))
     pygame.draw.rect(screen, RED, (player2_xf, player2_yf, Flag_SIZE, Flag_SIZE))
     
